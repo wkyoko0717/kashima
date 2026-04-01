@@ -757,7 +757,7 @@ address {
 }
 .fragment--g {
   top: 18%;
-  right: 8%;
+  right: -1%;
   width: 180px;
   height: 300px;
   padding: 2rem 1rem;
