@@ -636,7 +636,7 @@ address {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: rgba(250, 250, 248, 0.5);
+  color: rgba(250, 250, 248, 0.2);
   margin-bottom: 0.4rem;
   border-bottom: 1px solid rgba(250, 250, 248, 0.1);
   padding-bottom: 0.3rem;
@@ -645,7 +645,7 @@ address {
   font-family: "Noto Sans JP", sans-serif;
   font-size: 0.6rem;
   line-height: 1.8;
-  color: rgba(250, 250, 248, 0.3);
+  color: rgba(250, 250, 248, 0.2);
 }
 .fragment__rule {
   height: 1px;
@@ -661,13 +661,13 @@ address {
 .fragment__date, .fragment__paper-name {
   font-family: "Noto Sans JP", sans-serif;
   font-size: 0.6rem;
-  color: rgba(250, 250, 248, 0.3);
+  color: rgba(250, 250, 248, 0.2);
 }
 .fragment__paper-name {
   font-family: "Noto Serif JP", serif;
   font-size: 0.75rem;
   letter-spacing: 0.1em;
-  color: rgba(250, 250, 248, 0.35);
+  color: rgba(250, 250, 248, 0.2);
 }
 .fragment--a {
   width: 260px;
@@ -758,7 +758,7 @@ address {
 .fragment--g {
   top: 18%;
   right: -1%;
-  width: 180px;
+  width: 160px;
   height: 300px;
   padding: 2rem 1rem;
   color: rgba(250, 250, 248, 0.2);
@@ -773,13 +773,13 @@ address {
 .fragment--g .fragment__kicker {
   font-family: "Noto Sans JP", sans-serif;
   font-size: 0.55rem;
-  color: rgba(250, 250, 248, 0.3);
+  color: rgba(250, 250, 248, 0.2);
 }
 .fragment--g .fragment__main-headline {
   font-family: "Noto Serif JP", serif;
   font-size: 0.9rem;
   font-weight: 700;
-  color: rgba(250, 250, 248, 0.5);
+  color: rgba(250, 250, 248, 0.2);
 }
 .fragment--g .fragment__column {
   writing-mode: vertical-rl;
@@ -795,7 +795,7 @@ address {
   font-family: "Noto Serif JP", serif;
   font-size: 0.65rem;
   font-weight: 700;
-  color: rgba(250, 250, 248, 0.4);
+  color: rgba(250, 250, 248, 0.2);
   margin-bottom: 0.5rem;
 }
 .fragment--g .fragment__body-text {
