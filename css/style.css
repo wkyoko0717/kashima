@@ -510,12 +510,17 @@ address {
   bottom: 0;
   top: 80px;
   width: 46%;
-  min-width: 400px;
+  min-width: 300px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
   z-index: 1;
+}
+@media (max-width: 1023px) {
+  .hero__photo-area {
+    width: 300px;
+  }
 }
 .hero__photo {
   position: absolute;
