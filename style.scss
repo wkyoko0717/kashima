@@ -1,5 +1,5 @@
 // ================================================================
-// 小鹿一平 Official Website — style.scss
+// プチ鹿島 Official Website — style.scss
 // Design: 新聞エディトリアル × グラスモーフィズム × ラグジュアリー
 // ================================================================
 
@@ -73,10 +73,10 @@ $xxl : 1536px;
 }
 
 @mixin glass($opacity: 0.08, $blur: 18px, $border: 0.12) {
-  background: rgba($c-white, $opacity);
-  backdrop-filter: blur($blur);
-  -webkit-backdrop-filter: blur($blur);
-  border: 1px solid rgba($c-white, $border);
+  background: rgba($c-white, var(--glass-opacity, $opacity));
+  backdrop-filter: blur(var(--glass-blur, $blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur, $blur));
+  border: 1px solid rgba($c-white, var(--glass-border, $border));
 }
 
 @mixin np-rule($color: $c-grey-300) {
@@ -103,12 +103,57 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+// ================================================================
+// セクション背景色 — ここで一括調整できます
+// ================================================================
+:root {
+  // 明セクション（プロフィール・著書・お問い合わせ）
+  --section-light: rgba(220, 220, 225, .07);
+
+  // 暗セクション（ヒーロー・出演・経歴）
+  --section-dark: rgba(4, 10, 45, .72);
+
+  // フッター
+  --section-footer: rgba(5, 12, 40, .75);
+
+  // ガラスパネル（枠のopacity）— 数字を下げると透明に
+  --glass-opacity: .04;
+  --glass-border: .08;
+  --glass-blur: 16px;
+}
+
 body {
   font-family: $f-serif-ja;
-  color: $c-ink;
-  background: $c-white;
+  color: rgba($c-white, .88);
+  background: #070d1a;
   overflow-x: hidden;
   cursor: none;
+
+  // 煙・光の背景エフェクト
+  &::before,
+  &::after {
+    content: '';
+    position: fixed;
+    inset: -5%;
+    pointer-events: none;
+    z-index: 0;
+    filter: grayscale(1);
+  }
+
+  &::before {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 30%, rgba(14, 40, 100, .45) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 70%, rgba(8, 25, 70, .35) 0%, transparent 70%),
+      radial-gradient(ellipse 100% 80% at 50% 100%, rgba(5, 15, 40, .5) 0%, transparent 60%);
+    animation: smokeShift 18s ease-in-out infinite alternate;
+  }
+
+  &::after {
+    background:
+      radial-gradient(ellipse 50% 40% at 70% 20%, rgba(30, 60, 140, .25) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 55% at 25% 75%, rgba(10, 30, 90, .2) 0%, transparent 60%);
+    animation: smokeShift2 24s ease-in-out infinite alternate;
+  }
 
   @include dn($lg) {
     cursor: auto;
@@ -138,11 +183,57 @@ address {
   font-style: normal;
 }
 
+
+// ----------------------------------------------------------------
+// SITE BG WORDS (全ページ背景パララックス英字)
+// ----------------------------------------------------------------
+
+.site-bg-words {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 8vh 0;
+  filter: grayscale(1);
+}
+
+.site-bg-word {
+  font-family: $f-bebas;
+  font-size: clamp(8rem, 18vw, 20rem);
+  line-height: .9;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba($c-white, .08);
+  white-space: nowrap;
+  will-change: transform;
+  display: block;
+
+  &--1 {
+    margin-left: -2%;
+  }
+
+  &--2 {
+    margin-left: 15%;
+  }
+
+  &--3 {
+    margin-left: -5%;
+  }
+
+  &--4 {
+    margin-left: 25%;
+  }
+}
+
 // ----------------------------------------------------------------
 // 4. LOADER
 // ----------------------------------------------------------------
 
 .loader {
+  display: none !important; // 仮非表示
   position: fixed;
   inset: 0;
   background: $c-navy;
@@ -351,6 +442,56 @@ address {
   }
 }
 
+
+// ガラス板エッジ（セクション上端）
+@mixin glass-edge {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right,
+        transparent 0%,
+        rgba($c-white, .10) 20%,
+        rgba($c-white, .14) 50%,
+        rgba($c-white, .10) 80%,
+        transparent 100%);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .25);
+    pointer-events: none;
+    z-index: 2;
+  }
+}
+
+@keyframes smokeShift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(2%, 1.5%) scale(1.04);
+  }
+
+  100% {
+    transform: translate(-1.5%, -1%) scale(1.02);
+  }
+}
+
+@keyframes smokeShift2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-3%, 2%) scale(1.06);
+  }
+
+  100% {
+    transform: translate(1.5%, -1.5%) scale(1.02);
+  }
+}
+
 @keyframes tickerScroll {
   0% {
     transform: translateX(0);
@@ -367,11 +508,13 @@ address {
     display: none;
     position: fixed;
     inset: 0;
-    background: $c-navy;
+    background: rgba(#050b15, .97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 90;
+    z-index: 95;
 
     &.is-open {
       display: flex;
@@ -450,6 +593,7 @@ address {
   cursor: pointer;
   padding: 5px;
   z-index: 200;
+  position: relative;
 
   @include dn($lg) {
     display: flex;
@@ -458,14 +602,16 @@ address {
   span {
     display: block;
     width: 24px;
-    height: 1px;
+    height: 2px;
     background: $c-white;
-    transition: transform .3s $ease-expo, opacity .3s;
+    border-radius: 1px;
+    transition: transform .35s $ease-expo, opacity .25s;
+    transform-origin: center;
   }
 
   &.is-active {
     span:nth-child(1) {
-      transform: rotate(45deg) translateY(6px);
+      transform: translateY(7px) rotate(45deg);
     }
 
     span:nth-child(2) {
@@ -474,7 +620,7 @@ address {
     }
 
     span:nth-child(3) {
-      transform: rotate(-45deg) translateY(-6px);
+      transform: translateY(-7px) rotate(-45deg);
     }
   }
 }
@@ -485,8 +631,8 @@ address {
 
 .hero {
   min-height: 100vh;
-  background: $c-navy;
-  // background: $c-grey-700;
+  background: var(--section-dark);
+
   display: flex;
   align-items: center;
   position: relative;
@@ -513,7 +659,7 @@ address {
     font-size: clamp(10rem, 22vw, 24rem);
     line-height: .85;
     color: transparent;
-    -webkit-text-stroke: 1px rgba($c-white, .1);
+    -webkit-text-stroke: 1px rgba($c-white, .05);
     white-space: nowrap;
     will-change: transform;
 
@@ -542,7 +688,7 @@ address {
   // ── Content
   &__content {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     max-width: 680px;
 
     @include up($lg) {
@@ -642,12 +788,17 @@ address {
     margin-top: 2rem;
   }
 
-  // CTA
+  // CTA — 非表示
   &__scroll-cta {
+    display: none !important;
+    position: absolute;
+    right: 2rem;
+    bottom: 3rem;
+    z-index: 5;
     display: inline-flex;
     align-items: center;
     gap: .5rem;
-    margin-top: 2.5rem;
+    margin-top: 0;
     font-family: $f-bebas;
     font-size: .8rem;
     letter-spacing: .35em;
@@ -675,7 +826,7 @@ address {
   // Photo area
   &__photo-area {
     position: absolute;
-    right: 0;
+    right: 10%;
     bottom: 0;
     top: 80px;
     width: 46%;
@@ -684,10 +835,10 @@ address {
     align-items: flex-end;
     justify-content: center;
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
 
     @include dn($lg) {
-      // display: none;
+
       width: 300px;
     }
   }
@@ -730,38 +881,52 @@ address {
 
   &__photo-glow {
     position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(ellipse, rgba($c-blue, .18) 0%, transparent 70%);
+    // 写真エリアの中心（right:10%〜56% → 中心は right約33% = left約67%）
+    top: 50%;
+    left: 62%;
+    transform: translate(-50%, -50%);
+    width: clamp(400px, 55vw, 700px);
+    height: clamp(400px, 55vw, 700px);
+    background: radial-gradient(ellipse,
+        rgba($c-blue-lt, .22) 0%,
+        rgba($c-blue, .10) 40%,
+        transparent 70%);
     pointer-events: none;
+    z-index: 1;
+
+    // モバイル：写真が下部中央に来る場合
+    @include dn($lg) {
+      left: 50%;
+      top: 65%;
+      width: clamp(280px, 80vw, 480px);
+      height: clamp(280px, 80vw, 480px);
+    }
   }
 
-  // Scroll indicator
+  // Scroll indicator — 右端固定
   &__scroll-indicator {
     position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 3rem;
+    right: 2.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: .5rem;
+    z-index: 5;
 
     .scroll-ind__line {
       width: 1px;
-      height: 52px;
-      background: linear-gradient(to bottom, transparent, $c-blue-lt);
+      height: 64px;
+      background: linear-gradient(to bottom, transparent, rgba($c-gold, .7));
       animation: scrollPulse 2.2s ease-in-out infinite;
     }
 
     .scroll-ind__label {
       font-family: $f-bebas;
-      font-size: .6rem;
+      font-size: .65rem;
       letter-spacing: .45em;
-      color: rgba($c-white, .25);
+      color: rgba($c-gold, .6);
+      text-shadow: 0 0 12px rgba($c-gold, .4);
     }
   }
 
@@ -860,19 +1025,16 @@ address {
 
   &--a {
     width: 260px;
-    // top: 18%;
-    // right: 4%;
+
     left: 30%;
     top: 70%;
     transform: rotate(5deg);
     animation: floatA 9s ease-in-out infinite;
 
-    // @include dn($xl) {
     //   width: 200px;
     //   font-size: .85em;
     // }
 
-    // @include dn($xl) {
     //   display: none;
     // }
 
@@ -884,13 +1046,12 @@ address {
   &--b {
     width: 170px;
     top: 12%;
-    // top: 62%;
+
     left: 8%;
-    // right: 12%;
+
     transform: rotate(-3deg);
     animation: floatB 11s ease-in-out infinite;
 
-    // @include dn($xl) {
     //   display: none;
     // }
 
@@ -899,25 +1060,23 @@ address {
   &--c {
     width: 200px;
     bottom: 8%;
-    left: -2%;
+    left: 4%;
     transform: rotate(-5deg);
     animation: floatC 13s ease-in-out infinite;
 
-    // @include dn($lg) {
     //   display: none;
     // }
   }
 
   &--d {
     width: 160px;
-    // top: 38%;
+
     top: 72%;
-    // left: 5%;
+
     right: 5%;
     transform: rotate(2deg);
     animation: floatA 8s ease-in-out infinite reverse;
 
-    // @include dn($xl) {
     //   display: none;
     // }
   }
@@ -963,11 +1122,11 @@ address {
     transform-style: preserve-3d;
 
     // ここでしっかり傾きを指定！
-    // transform: rotateY(50deg) rotateX(15deg);
+
     transform: rotate(5deg);
     animation: floatV1 10s ease-in-out infinite;
 
-    @include dn($lg) {
+    @include dn($md) {
       display: none;
     }
   }
@@ -990,16 +1149,16 @@ address {
   // ★日本の新聞レイアウト完全再現 fragment--g
   &--g {
     top: 18%;
-    right: -1%;
+    right: 12%;
     width: 160px;
     height: 300px;
-    // min-height: 200px;
+
     padding: 2rem 1rem;
     color: rgba($c-white, .2);
 
     // 3D設定
     transform-style: preserve-3d;
-    // transform: perspective(1000px) rotateY(-25deg) rotateX(10deg);
+
     transform: rotate(8deg);
     animation: floatV3 11s ease-in-out infinite;
 
@@ -1011,7 +1170,7 @@ address {
       // margin-bottom: 1.5rem;
 
       // ★段組みをまたいで表示させる魔法
-      // column-span: all;
+
     }
 
     .fragment__kicker {
@@ -1019,7 +1178,7 @@ address {
       font-size: .55rem;
       color: rgba($c-white, .2);
       // letter-spacing: .1em;
-      // display: block; // 改行
+
       // margin-bottom: .2rem;
     }
 
@@ -1040,7 +1199,7 @@ address {
       column-rule: 1px solid rgba($c-white, .1);
 
       // ★中身がはみ出さないように、高さをしっかり確保
-      // height: 320px;
+
     }
 
     .fragment__lead {
@@ -1075,12 +1234,11 @@ address {
   }
 }
 
-
 @keyframes floatV1 {
 
   0%,
   100% {
-    // transform: translateY(0) rotateY(50deg) rotateX(15deg);
+
     transform: translateY(0) rotate(5deg);
 
   }
@@ -1094,7 +1252,7 @@ address {
 
   0%,
   100% {
-    // transform: translateY(0) rotateY(15deg) rotateX(-5deg);
+
     transform: translateY(0) rotate(-5deg);
   }
 
@@ -1107,7 +1265,7 @@ address {
 
   0%,
   100% {
-    // transform: translateY(0) rotateY(15deg) rotateX(-5deg);
+
     transform: translateY(0) rotate(8deg);
   }
 
@@ -1115,7 +1273,6 @@ address {
     transform: translateY(-15px) rotate(8deg);
   }
 }
-
 
 @keyframes floatA {
 
@@ -1158,6 +1315,7 @@ address {
 // ----------------------------------------------------------------
 
 .marquee-divider {
+  display: none;
   background: $c-blue;
   overflow: hidden;
   padding: .5rem 0;
@@ -1203,20 +1361,7 @@ address {
 
 // Column lines decoration
 .section__col-lines {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  pointer-events: none;
-  z-index: 0;
-
-  span {
-    flex: 1;
-    border-right: 1px solid rgba($c-ink, .04);
-
-    &:last-child {
-      border-right: none;
-    }
-  }
+  display: none;
 }
 
 // Section header
@@ -1226,17 +1371,13 @@ address {
   z-index: 1;
 
   &__vol {
-    font-family: $f-bebas;
-    font-size: .75rem;
-    letter-spacing: .35em;
-    color: $c-grey-500;
-    display: block;
-    margin-bottom: .4rem;
+    display: none;
   }
 
   &__title {
     font-family: $f-serif-ja;
     font-weight: 700;
+    color: $c-white;
     @include fluid(24, 38);
     line-height: 1;
     display: flex;
@@ -1248,7 +1389,7 @@ address {
       font-family: $f-bebas;
       font-size: .55em;
       letter-spacing: .35em;
-      color: $c-blue;
+      color: $c-blue-lt;
       font-style: normal;
       font-weight: 400;
     }
@@ -1256,9 +1397,9 @@ address {
 
   &__rule {
     margin-top: 1rem;
-    height: 4px;
+    height: 1px;
     width: 100px;
-    background: linear-gradient(to right, $c-blue, $c-blue-lt, transparent);
+    background: linear-gradient(to right, rgba($c-white, .5), rgba($c-gold, .4), transparent);
   }
 
   &--light {
@@ -1281,7 +1422,10 @@ address {
 // ----------------------------------------------------------------
 
 .about {
-  background: $c-white;
+  background: var(--section-light);
+  position: relative;
+  z-index: 1;
+  @include glass-edge;
 
   &__layout {
     display: grid;
@@ -1296,23 +1440,43 @@ address {
     }
   }
 
+  // プロフィール写真
+  &__photo-wrap {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__portrait {
+    width: clamp(160px, 30vw, 240px);
+    height: clamp(160px, 30vw, 240px);
+    object-fit: cover;
+    object-position: top center;
+    border-radius: 50%;
+    border: 1px solid rgba($c-white, .12);
+    box-shadow:
+      0 0 0 6px rgba($c-white, .04),
+      0 0 40px rgba($c-blue-lt, .15),
+      0 16px 48px rgba(0, 0, 0, .4);
+    display: inline-block;
+  }
+
   // &__text { }
 
   &__lead {
     font-size: clamp(1rem, 1.75vw, 1.12rem);
     line-height: 2.15;
-    color: $c-grey-700;
+    color: rgba($c-white, .75);
     margin-bottom: 2rem;
 
-    // Drop cap
+    // Drop cap (無効化)
     &.drop-cap::first-letter {
-      font-family: $f-serif-ja;
-      font-size: 4.2em;
-      font-weight: 900;
-      float: left;
-      line-height: .72;
-      margin: .05em .1em 0 0;
-      color: $c-navy;
+      font-size: inherit;
+      font-weight: inherit;
+      float: none;
+      line-height: inherit;
+      margin: 0;
     }
   }
 
@@ -1330,7 +1494,7 @@ address {
       font-family: $f-sans-ja;
       font-size: .88rem;
       line-height: 1.95;
-      color: $c-grey-700;
+      color: rgba($c-white, .6);
     }
   }
 
@@ -1339,8 +1503,11 @@ address {
     flex-wrap: wrap;
     gap: .75rem 2rem;
     padding: 1.25rem;
-    background: $c-grey-100;
-    border-left: 3px solid $c-blue;
+    background: rgba($c-white, .04);
+    border: 1px solid rgba($c-white, .1);
+    border-left: 2px solid rgba($c-gold, .6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 
     >div {
       display: flex;
@@ -1353,14 +1520,14 @@ address {
       font-size: .72rem;
       font-weight: 700;
       letter-spacing: .05em;
-      color: $c-grey-500;
+      color: rgba($c-white, .35);
       white-space: nowrap;
     }
 
     dd {
       font-family: $f-serif-ja;
       font-size: .85rem;
-      color: $c-ink;
+      color: rgba($c-white, .85);
     }
   }
 
@@ -1377,53 +1544,75 @@ address {
 }
 
 .stat-card {
-  background: $c-navy;
-  padding: 1.5rem;
+  @include glass(.07, 16px, .12);
+  padding: 1.75rem 1.5rem;
   position: relative;
   overflow: hidden;
-  flex: 1 1 120px;
+  flex: 1 1 140px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 120px;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, .28),
+    0 3px 0 rgba(0, 0, 0, .4),
+    inset 0 1px 0 rgba($c-white, .1);
 
+  // 上部ゴールドライン
   &::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(to right, $c-blue, $c-blue-lt);
+    height: 1px;
+    background: linear-gradient(to right, rgba($c-gold, .6), rgba($c-gold, .2), transparent);
+    border-radius: 10px 10px 0 0;
   }
 
+  // 底面の厚み
   &::after {
     content: '';
     position: absolute;
-    right: -20px;
-    bottom: -20px;
-    width: 80px;
-    height: 80px;
-    border: 1px solid rgba($c-white, .04);
-    border-radius: 50%;
+    bottom: -4px;
+    left: 4px;
+    right: -3px;
+    height: 100%;
+    background: rgba(0, 0, 0, .22);
+    border-radius: 10px;
+    z-index: -1;
+    filter: blur(2px);
+  }
+
+  &__top {
+    display: flex;
+    align-items: baseline;
+    gap: .3rem;
+    line-height: 1;
   }
 
   &__num {
     font-family: $f-bebas;
-    font-size: 3.2rem;
+    font-size: 3.4rem;
     color: $c-white;
     line-height: 1;
   }
 
   &__unit {
-    font-family: $f-sans-ja;
-    font-size: .75rem;
-    color: $c-blue-lt;
-    margin-top: .2rem;
+    font-family: $f-bebas;
+    font-size: 1.1rem;
+    color: rgba($c-gold, .85);
+    letter-spacing: .05em;
   }
 
   &__label {
     font-family: $f-sans-ja;
-    font-size: .7rem;
-    color: rgba($c-white, .4);
-    margin-top: .5rem;
-    line-height: 1.5;
+    font-size: .68rem;
+    color: rgba($c-white, .38);
+    margin-top: .75rem;
+    line-height: 1.6;
   }
 }
 
@@ -1432,11 +1621,15 @@ address {
 // ----------------------------------------------------------------
 
 .media {
-  background: $c-paper;
+  background: var(--section-dark);
+  position: relative;
+  z-index: 1;
+  @include glass-edge;
 
   &__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
     gap: 1.5rem;
     position: relative;
     z-index: 1;
@@ -1448,15 +1641,40 @@ address {
 }
 
 .media-block {
-  background: $c-white;
+  @include glass(.07, 20px, .12);
   padding: 2rem;
-  border-top: 3px solid $c-blue;
-  box-shadow: 0 2px 20px rgba($c-ink, .05);
-  transition: transform .35s $ease-expo, box-shadow .35s;
+  border-radius: 10px;
+  border-top: 1px solid rgba($c-gold, .35);
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, .28),
+    0 4px 0 rgba(0, 0, 0, .45),
+    inset 0 1px 0 rgba($c-white, .1);
+  transition: transform .35s $ease-expo, box-shadow .35s, background .35s;
+
+  // ガラスの厚み（底面）
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 4px;
+    right: -4px;
+    height: 100%;
+    background: rgba(0, 0, 0, .25);
+    border-radius: 10px;
+    z-index: -1;
+    filter: blur(2px);
+  }
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba($c-ink, .1);
+    transform: translateY(-6px);
+    background: rgba($c-white, .1);
+    box-shadow:
+      0 20px 56px rgba(0, 0, 0, .35),
+      0 4px 0 rgba(0, 0, 0, .4),
+      inset 0 1px 0 rgba($c-white, .14);
   }
 
   &__title {
@@ -1464,13 +1682,13 @@ address {
     font-size: .92rem;
     font-weight: 700;
     letter-spacing: .05em;
-    color: $c-navy;
+    color: $c-white;
     display: flex;
     align-items: center;
     gap: .5rem;
     margin-bottom: 1.5rem;
     padding-bottom: .75rem;
-    border-bottom: 1px solid $c-grey-200;
+    border-bottom: 1px solid rgba($c-white, .08);
   }
 }
 
@@ -1488,39 +1706,163 @@ address {
 }
 
 .media-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: .6rem;
-  row-gap: .1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
 
   &__org {
-    grid-column: 1;
-    grid-row: 1;
     font-family: $f-bebas;
-    font-size: .72rem;
+    font-size: .7rem;
     letter-spacing: .1em;
-    color: $c-blue;
-    white-space: nowrap;
-    align-self: center;
-    min-width: 60px;
+    color: $c-gold;
   }
 
   &__name {
-    grid-column: 2;
-    grid-row: 1;
     font-family: $f-sans-ja;
     font-size: .82rem;
-    color: $c-ink;
-    line-height: 1.4;
+    color: rgba($c-white, .88);
+    line-height: 1.5;
   }
 
   &__freq {
-    grid-column: 1 / -1;
     font-family: $f-sans-ja;
-    font-size: .68rem;
-    color: $c-grey-500;
-    padding-left: calc(60px + .6rem);
+    font-size: .66rem;
+    color: rgba($c-white, .35);
+  }
+}
+
+// ----------------------------------------------------------------
+// 12b. BOOK GRID (グリッド表示)
+
+.books__grid-wrap {
+  padding: 0 2rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem 1.5rem;
+
+  @include dn($lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include dn($md) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 1rem;
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
+    cursor: default;
+
+    &:hover .book-grid__cover img {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 32px rgba($c-ink, .2);
+    }
+  }
+
+  &__cover {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #0d1525;
+    box-shadow:
+      2px 4px 0 rgba(0, 0, 0, .4),
+      8px 14px 28px rgba(0, 0, 0, .5),
+      inset -2px 0 6px rgba(0, 0, 0, .3);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform .4s $ease-expo, box-shadow .4s;
+
+    &:hover {
+      transform: perspective(600px) rotateY(-8deg) rotateX(2deg) translateY(-6px);
+      box-shadow:
+        6px 10px 0 rgba(0, 0, 0, .4),
+        20px 28px 50px rgba(0, 0, 0, .55),
+        inset -3px 0 8px rgba(0, 0, 0, .35);
+    }
+
+    // 背表紙の光沢
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 12px;
+      background: linear-gradient(to right, rgba(0, 0, 0, .5), rgba(255, 255, 255, .06), rgba(0, 0, 0, .2));
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    // 表面の光沢
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 12px;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, .07), transparent);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    // 画像未配置のフォールバック
+    &.no-img {
+      background: linear-gradient(150deg, #1a1a2e 0%, #2d2d4a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: '準備中';
+        font-family: $f-sans-ja;
+        font-size: .7rem;
+        color: rgba($c-white, .4);
+        letter-spacing: .1em;
+      }
+    }
+  }
+
+  &__meta {
+    width: 100%;
+    text-align: center;
+
+    h4 {
+      font-family: $f-sans-ja;
+      font-size: .75rem;
+      font-weight: 700;
+      color: rgba($c-white, .85);
+      line-height: 1.4;
+      margin-bottom: .25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    p {
+      font-family: $f-sans-ja;
+      font-size: .65rem;
+      color: rgba($c-white, .35);
+    }
   }
 }
 
@@ -1529,11 +1871,12 @@ address {
 // ----------------------------------------------------------------
 
 .books {
-  background: $c-navy;
-  overflow: hidden;
+  background: var(--section-light);
+  overflow: visible;
+  position: relative;
+  @include glass-edge;
 
   .section-header {
-    padding: 0 2rem;
     max-width: 1160px;
     margin-left: auto;
     margin-right: auto;
@@ -1686,6 +2029,34 @@ address {
   background: linear-gradient(150deg, #2a0f3d 0%, #5a1e7a 100%);
 }
 
+.cover--6 {
+  background: linear-gradient(150deg, #0d3d3d 0%, #1a7a7a 100%);
+}
+
+.cover--7 {
+  background: linear-gradient(150deg, #3d2b0d 0%, #7a5a1e 100%);
+}
+
+.cover--8 {
+  background: linear-gradient(150deg, #1a0d3d 0%, #3d1a7a 100%);
+}
+
+.cover--9 {
+  background: linear-gradient(150deg, #2d0d0d 0%, #6b1a1a 100%);
+}
+
+.cover--10 {
+  background: linear-gradient(150deg, #0d2d1a 0%, #1a5a3d 100%);
+}
+
+.cover--11 {
+  background: linear-gradient(150deg, #2d2d0d 0%, #5a5a1a 100%);
+}
+
+.cover--12 {
+  background: linear-gradient(150deg, #1a1a3d 0%, #3a3a7a 100%);
+}
+
 .book-cover__spine {
   position: absolute;
   left: 0;
@@ -1790,7 +2161,10 @@ address {
 // ----------------------------------------------------------------
 
 .career {
-  background: $c-white;
+  background: var(--section-dark);
+  position: relative;
+  z-index: 1;
+  @include glass-edge;
 }
 
 .timeline {
@@ -1805,7 +2179,7 @@ address {
       top: 0;
       bottom: 0;
       width: 1px;
-      background: linear-gradient(to bottom, transparent, $c-blue-lt 10%, $c-blue-lt 90%, transparent);
+      background: linear-gradient(to bottom, transparent, rgba($c-white, .12) 10%, rgba($c-white, .12) 90%, transparent);
     }
   }
 }
@@ -1833,9 +2207,9 @@ address {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: $c-blue;
-      border: 2px solid $c-white;
-      box-shadow: 0 0 0 3px rgba($c-blue, .25);
+      background: $c-blue-lt;
+      border: 2px solid rgba($c-navy, .8);
+      box-shadow: 0 0 0 3px rgba($c-blue-lt, .25), 0 0 12px rgba($c-blue-lt, .3);
     }
   }
 
@@ -1857,7 +2231,7 @@ address {
       font-family: $f-serif-ja;
       font-size: 1.02rem;
       font-weight: 700;
-      color: $c-navy;
+      color: $c-white;
       line-height: 1.6;
       margin-bottom: .4rem;
     }
@@ -1866,7 +2240,7 @@ address {
       font-family: $f-sans-ja;
       font-size: .85rem;
       line-height: 1.9;
-      color: $c-grey-700;
+      color: rgba($c-white, .55);
     }
   }
 
@@ -1883,8 +2257,8 @@ address {
   }
 
   &--current .tl-item__dot {
-    background: $c-red;
-    box-shadow: 0 0 0 4px rgba($c-red, .2);
+    background: $c-gold;
+    box-shadow: 0 0 0 4px rgba($c-gold, .25), 0 0 16px rgba($c-gold, .4);
   }
 }
 
@@ -1893,7 +2267,7 @@ address {
 // ----------------------------------------------------------------
 
 .events {
-  background: $c-paper;
+  background: transparent;
 
   &__list {
     display: flex;
@@ -2033,12 +2407,12 @@ address {
   }
 
   &--outline {
-    border-color: $c-grey-300;
-    color: $c-ink;
+    border-color: rgba($c-white, .25);
+    color: rgba($c-white, .75);
 
     &:hover {
-      border-color: $c-blue;
-      color: $c-blue;
+      border-color: $c-blue-lt;
+      color: $c-blue-lt;
     }
   }
 }
@@ -2048,7 +2422,10 @@ address {
 // ----------------------------------------------------------------
 
 .contact {
-  background: $c-white;
+  background: var(--section-light);
+  position: relative;
+  z-index: 1;
+  @include glass-edge;
 
   &__layout {
     display: grid;
@@ -2067,9 +2444,9 @@ address {
     font-family: $f-bebas;
     font-size: .9rem;
     letter-spacing: .35em;
-    color: $c-grey-500;
+    color: rgba($c-white, .4);
     margin-bottom: 1.25rem;
-    border-bottom: 1px solid $c-grey-200;
+    border-bottom: 1px solid rgba($c-white, .08);
     padding-bottom: .75rem;
   }
 }
@@ -2085,10 +2462,16 @@ address {
   align-items: center;
   gap: 1rem;
   padding: .9rem 1.25rem;
-  border: 1px solid $c-grey-200;
+  border-radius: 8px;
+  @include glass(.08, 14px, .14);
   position: relative;
+  z-index: 1;
   overflow: hidden;
   transition: all .35s $ease-expo;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, .28),
+    0 2px 0 rgba(0, 0, 0, .35),
+    inset 0 1px 0 rgba($c-white, .12);
 
   &::before {
     content: '';
@@ -2150,14 +2533,14 @@ address {
     font-family: $f-bebas;
     font-size: .88rem;
     letter-spacing: .2em;
-    color: $c-grey-700;
+    color: rgba($c-white, .7);
     transition: color .3s;
   }
 
   &__handle {
     font-family: $f-sans-ja;
     font-size: .75rem;
-    color: $c-grey-500;
+    color: rgba($c-white, .35);
     transition: color .3s;
   }
 
@@ -2171,7 +2554,7 @@ address {
 
   &.sns--x {
     .sns-link__icon {
-      color: #000;
+      color: rgba($c-white, .7);
     }
 
     &::before {
@@ -2199,13 +2582,13 @@ address {
     }
   }
 
-  &.sns--yt {
+  &.sns--bunshun {
     .sns-link__icon {
-      color: #FF0000;
+      color: rgba($c-white, .7);
     }
 
     &::before {
-      background: #FF0000;
+      background: rgba($c-blue-mid, .8);
     }
   }
 }
@@ -2215,7 +2598,7 @@ address {
     font-family: $f-serif-ja;
     font-size: 1.2rem;
     font-weight: 700;
-    color: $c-navy;
+    color: $c-white;
     margin-bottom: 1rem;
   }
 
@@ -2223,26 +2606,31 @@ address {
     font-family: $f-sans-ja;
     font-size: .88rem;
     line-height: 1.9;
-    color: $c-grey-700;
+    color: rgba($c-white, .6);
   }
 
   &__agency {
     margin-top: 1.25rem;
     padding: 1.25rem 1.5rem;
-    background: $c-grey-100;
-    border-left: 3px solid $c-blue;
+    @include glass(.07, 16px, .12);
+    border-radius: 10px;
+    border-top: 1px solid rgba($c-gold, .35);
+    box-shadow:
+      0 6px 24px rgba(0, 0, 0, .28),
+      0 3px 0 rgba(0, 0, 0, .4),
+      inset 0 1px 0 rgba($c-white, .1);
     font-family: $f-sans-ja;
     font-size: .88rem;
     line-height: 2;
     color: $c-grey-700;
 
     strong {
-      color: $c-navy;
+      color: $c-white;
       font-weight: 700;
     }
 
     a {
-      color: $c-blue;
+      color: $c-blue-lt;
       text-decoration: underline;
     }
   }
@@ -2250,7 +2638,7 @@ address {
   &__note {
     margin-top: .75rem;
     font-size: .72rem !important;
-    color: $c-grey-300 !important;
+    color: rgba($c-white, .25) !important;
   }
 }
 
@@ -2259,8 +2647,10 @@ address {
 // ----------------------------------------------------------------
 
 .site-footer {
-  background: $c-ink;
+  background: var(--section-footer);
   padding: 3rem 0;
+  position: relative;
+  @include glass-edge;
 
   &__inner {
     display: flex;
@@ -2358,4 +2748,584 @@ address {
     transform: none;
     transition: opacity .8s $ease-expo, transform .8s $ease-expo;
   }
+}
+
+// ----------------------------------------------------------------
+// NP-FRAGMENT : 新聞レイアウト フラグメント
+// ----------------------------------------------------------------
+
+// ── 共通ラッパ
+.np-fragment {
+  position: absolute;
+  background: rgba(12, 31, 56, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 10px 12px;
+  will-change: transform;
+  overflow: hidden;
+  pointer-events: none;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  opacity: 0.25;
+
+  // ── 微妙な紙テクスチャ風オーバーレイ
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom,
+        transparent,
+        transparent 18px,
+        rgba(255, 255, 255, 0.012) 18px,
+        rgba(255, 255, 255, 0.012) 19px);
+    pointer-events: none;
+  }
+}
+
+// ── 配置・サイズ（PC）
+.np-fragment--a {
+  width: 330px;
+  top: 14%;
+  left: 25%;
+  transform: rotate(-1.5deg);
+  animation: npFloat1 10s ease-in-out infinite;
+
+  // @media (max-width: 1279px) {
+  //   left: -2%;
+  //   top: 16%;
+  //   width: 210px;
+  // }
+
+  @media (max-width: 767px) {
+
+    width: 330px;
+    top: 14%;
+    left: -15%;
+  }
+}
+
+.np-fragment--b {
+  width: 170px;
+  top: 10%;
+  right: 12%;
+  transform: rotate(2.5deg);
+  animation: npFloat2 12s ease-in-out infinite;
+
+  // @media (max-width: 1535px) {
+  //   right: 1%;
+  // }
+
+  // スマホではヒーロー右上に小さく
+  @media (max-width: 480px) {
+    width: 130px;
+    top: 10%;
+    right: 2%;
+    transform: rotate(2deg);
+
+    display: none;
+  }
+}
+
+.np-fragment--c {
+  width: 200px;
+  top: 69%;
+  left: 32%;
+  transform: rotate(1deg);
+  animation: npFloat3 14s ease-in-out infinite;
+
+  @media (max-width: 767px) {
+    left: 18%;
+    top: 80%;
+    width: 170px;
+  }
+
+  // @media (max-width: 1023px) {
+  //   display: none;
+  // }
+}
+
+.np-fragment--d {
+  width: 150px;
+  bottom: 5%;
+  right: 23%;
+  transform: rotate(-2deg);
+  animation: npFloat1 11s ease-in-out infinite reverse;
+
+  // タブレット以下は非表示
+  @media (max-width: 767px) {
+
+    right: 50%;
+
+    display: none;
+  }
+}
+
+.np-fragment--e {
+  width: 195px;
+  bottom: 36%;
+  left: 52%;
+  transform: translateX(-50%) rotate(.8deg);
+  animation: npFloat2 9s ease-in-out infinite;
+
+  // スマホ: 下部固定
+  @media (max-width: 767px) {
+    width: 180px;
+    bottom: 20%;
+    left: 60%;
+    transform: translateX(-50%) rotate(0deg);
+
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    width: 180px;
+
+    display: none;
+  }
+}
+
+.np-fragment--f {
+  width: 210px;
+  height: 240px;
+  top: 34%;
+  right: 2%;
+  transform: rotate(-1.5deg);
+  animation: npFloat3 13s ease-in-out infinite;
+
+  @media (max-width: 767px) {
+    right: -8%;
+    top: 40%;
+    width: 185px;
+  }
+
+  // @media (max-width: 1279px) {
+  //   display: none;
+  // }
+}
+
+// ── フロートアニメーション（既存とは別名で）
+@keyframes npFloat1 {
+
+  0%,
+  100% {
+    transform: rotate(-1.5deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(-1.5deg) translateY(-16px);
+  }
+}
+
+@keyframes npFloat2 {
+
+  0%,
+  100% {
+    transform: rotate(2.5deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(2.5deg) translateY(12px);
+  }
+}
+
+@keyframes npFloat3 {
+
+  0%,
+  100% {
+    transform: rotate(1deg) translateY(0);
+  }
+
+  50% {
+    transform: rotate(1deg) translateY(-10px);
+  }
+}
+
+// ── Fragment E (translateX特殊対応)
+.np-fragment--e {
+  @media (min-width: 768px) {
+    animation: npFloatE 9s ease-in-out infinite;
+  }
+}
+
+@keyframes npFloatE {
+
+  0%,
+  100% {
+    transform: translateX(-50%) rotate(.8deg) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) rotate(.8deg) translateY(-12px);
+  }
+}
+
+// ================================================================
+// NP-FRAGMENT 内部パーツ
+// ================================================================
+
+// ── ヘッダー行（紙名＋日付）
+.np-frag__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.np-frag__paper-name {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.np-frag__date {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .5rem;
+  letter-spacing: .05em;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+// ── 罫線 3本（見出し上下に使う）
+.np-frag__rule-triple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 5px;
+  gap: 1px;
+  margin: 4px 0;
+
+  span {
+    &:nth-child(1) {
+      background: rgba(255, 255, 255, 0.60);
+    }
+
+    &:nth-child(2) {
+      background: rgba(255, 255, 255, 0.30);
+    }
+
+    &:nth-child(3) {
+      background: rgba(255, 255, 255, 0.10);
+    }
+  }
+}
+
+// ── 罫線 1本
+.np-frag__rule-single {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 5px 0;
+}
+
+// ── 罫線 2本（号外風）
+.np-frag__rule-double {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 5px 0;
+
+  span {
+    display: block;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+
+    &:first-child {
+      background: rgba(255, 255, 255, 0.45);
+    }
+  }
+}
+
+// ── 囲み見出し
+.np-frag__boxed-headline {
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  padding: 3px 6px;
+  margin: 5px 0;
+  position: relative;
+
+  // コーナーの小さな装飾
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  &::before {
+    top: -3px;
+    left: -3px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  &::after {
+    bottom: -3px;
+    right: -3px;
+    border-left: none;
+    border-top: none;
+  }
+
+  &--sm {
+    padding: 2px 5px;
+    margin: 4px 0;
+  }
+}
+
+.np-frag__boxed-inner {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+  display: block;
+}
+
+// ── 脇見出し（キッカー）
+.np-frag__kicker {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .58rem;
+  color: rgba(90, 159, 212, 0.85);
+  letter-spacing: .05em;
+  margin-bottom: 6px;
+}
+
+// ── 段組み 2カラム
+.np-frag__cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+
+  &--sm {
+    font-size: .9em;
+  }
+}
+
+.np-frag__col {
+  padding: 0 7px;
+  border-right: 1px solid rgba(255, 255, 255, 0.10);
+
+  &:last-child {
+    border-right: none;
+  }
+
+  p {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: .58rem;
+    line-height: 1.85;
+    color: rgba(255, 255, 255, 0.50);
+  }
+
+  // 縦書きカラム
+  &--tate p {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    height: 90px;
+    overflow: hidden;
+    font-size: .57rem;
+  }
+}
+
+// ── キャプション
+.np-frag__caption {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .52rem;
+  color: rgba(255, 255, 255, 0.28);
+  letter-spacing: .04em;
+  margin-top: 4px;
+}
+
+// ── 署名
+.np-frag__byline {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .52rem;
+  color: rgba(255, 255, 255, 0.25);
+  text-align: right;
+  margin-top: 4px;
+}
+
+// ================================================================
+// 縦書きブロック
+// ================================================================
+
+.np-frag__vertical-block {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+
+  &--col {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+// 縦書きタイトルボックス
+.np-frag__vtitle-box {
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  padding: 4px 3px;
+  flex-shrink: 0;
+
+  &--inline {
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 0 0 3px 0;
+  }
+}
+
+.np-frag__vtitle {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'Noto Serif JP', serif;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: rgba(255, 255, 255, 0.80);
+  display: block;
+  max-height: 130px;
+  overflow: hidden;
+
+  .np-frag__vertical-block--col & {
+    writing-mode: horizontal-tb;
+    max-height: none;
+    font-size: .68rem;
+  }
+}
+
+.np-frag__vbody {
+  flex: 1;
+
+  p {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: .57rem;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.45);
+  }
+}
+
+// コラムラベル
+.np-frag__col-label {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .2em;
+  color: rgba(90, 159, 212, 0.70);
+  border-bottom: 1px solid rgba(90, 159, 212, 0.30);
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+}
+
+// ================================================================
+// グラフ
+// ================================================================
+
+.np-frag__graph-wrap {
+  margin: 6px 0;
+}
+
+.np-frag__bar-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.np-frag__graph-unit {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .48rem;
+  color: rgba(255, 255, 255, 0.25);
+  text-align: right;
+  margin-top: 2px;
+}
+
+// ================================================================
+// 号外ボックス
+// ================================================================
+
+.np-frag__gougai-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.np-frag__gougai-label {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  // color: #B83228;
+  // border: 2px solid #B83228;
+  color: $c-grey-500;
+  border: 2px solid $c-grey-500;
+  padding: 1px 5px;
+  letter-spacing: .1em;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.np-frag__gougai-text {
+  flex: 1;
+}
+
+.np-frag__gougai-head {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.80);
+  letter-spacing: .05em;
+  line-height: 1.5;
+}
+
+.np-frag__gougai-sub {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .52rem;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 2px;
+}
+
+// ================================================================
+// 発言録（インタビューボックス）
+// ================================================================
+
+.np-frag__interview-box {
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 2px solid rgba(90, 159, 212, 0.6);
+  padding: 5px 8px;
+  margin: 5px 0;
+}
+
+.np-frag__interview-label {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  color: rgba(90, 159, 212, 0.70);
+  margin-bottom: 3px;
+}
+
+.np-frag__interview-quote {
+  font-family: 'Noto Serif JP', serif;
+  font-size: .65rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.75);
+  quotes: '「' '」';
+  margin: 0;
+
+  &::before {
+    content: open-quote;
+  }
+
+  &::after {
+    content: close-quote;
+  }
+}
+
+.np-frag__interview-cite {
+  display: block;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: .5rem;
+  color: rgba(255, 255, 255, 0.25);
+  margin-top: 3px;
+  font-style: normal;
 }
