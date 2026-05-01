@@ -111,7 +111,7 @@ html {
   --section-light: rgba(34, 34, 34, 0.55);
 
   // 暗セクション（ヒーロー・出演・経歴）
-  --section-dark: rgba(0, 17, 114, 0.24);
+  --section-dark: rgba(0, 9, 56, 0.721);
 
   // フッター
   --section-footer: rgba(5, 12, 40, .75);
@@ -232,7 +232,7 @@ canvas {
   font-size: clamp(8rem, 18vw, 20rem);
   line-height: .9;
   color: transparent;
-  -webkit-text-stroke: 1px rgba($c-white, .05);
+  -webkit-text-stroke: 1px rgba($c-white, .1);
   white-space: nowrap;
   will-change: transform;
   position: absolute;
@@ -759,6 +759,7 @@ canvas {
     display: inline-block;
     margin-bottom: 2rem;
     perspective: 1200px;
+    width: 100%;
   }
 
   &__glass-inner {
@@ -779,20 +780,20 @@ canvas {
     // transition: transform .6s $ease-expo;
 
     // 上端の光の反射
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(to right,
-          transparent,
-          rgba($c-white, .35) 30%,
-          rgba($c-white, .5) 50%,
-          rgba($c-white, .35) 70%,
-          transparent);
-    }
+    // &::before {
+    //   content: '';
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   right: 0;
+    //   height: 1px;
+    //   background: linear-gradient(to right,
+    //       transparent,
+    //       rgba($c-white, .35) 30%,
+    //       rgba($c-white, .5) 50%,
+    //       rgba($c-white, .35) 70%,
+    //       transparent);
+    // }
 
     // 左端の光の反射（奥行き方向）
     &::after {
