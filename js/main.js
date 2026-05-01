@@ -202,23 +202,47 @@
       onLeaveBack: () => header.classList.remove('is-scrolled')
     });
 
-    // Mobile nav toggle
+    // Mobile nav toggle — nav と toggle を両方 body直下に移動してstacking contextを脱出
     if (toggle && nav) {
+      const navParent = nav.parentElement;
+      const navNextSibling = nav.nextSibling;
+      const toggleParent = toggle.parentElement;
+      const toggleNextSibling = toggle.nextSibling;
+
+      const openNav = () => {
+        document.body.appendChild(nav);    // nav を body直下に
+        document.body.appendChild(toggle); // toggle も body直下に（navより後→前面）
+        nav.classList.add('is-open');
+        toggle.classList.add('is-active');
+        toggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeNav = () => {
+        nav.classList.remove('is-open');
+        toggle.classList.remove('is-active');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        // toggle を元の位置に戻す
+        if (toggleNextSibling) {
+          toggleParent.insertBefore(toggle, toggleNextSibling);
+        } else {
+          toggleParent.appendChild(toggle);
+        }
+        // nav を元の位置に戻す
+        if (navNextSibling) {
+          navParent.insertBefore(nav, navNextSibling);
+        } else {
+          navParent.appendChild(nav);
+        }
+      };
+
       toggle.addEventListener('click', () => {
-        const isOpen = nav.classList.toggle('is-open');
-        toggle.classList.toggle('is-active', isOpen);
-        toggle.setAttribute('aria-expanded', isOpen);
-        document.body.style.overflow = isOpen ? 'hidden' : '';
+        nav.classList.contains('is-open') ? closeNav() : openNav();
       });
 
-      // Close on nav link click
       nav.querySelectorAll('a').forEach(a => {
-        a.addEventListener('click', () => {
-          nav.classList.remove('is-open');
-          toggle.classList.remove('is-active');
-          toggle.setAttribute('aria-expanded', 'false');
-          document.body.style.overflow = '';
-        });
+        a.addEventListener('click', closeNav);
       });
     }
 
@@ -688,21 +712,22 @@
 
   // ──────────────────────────────────────────────
 
-    // ── 全体背景BGワード パララックス（視差速度を変えて奥行き演出）
-    const siteBgWords = document.querySelectorAll('.site-bg-word');
-    const siteBgSpeeds = [-1.0, -1.0, -1.0, -1.0];
-    siteBgWords.forEach((word, i) => {
-      gsap.to(word, {
-        yPercent: siteBgSpeeds[i] * 100,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: 'body',
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 2
-        }
-      });
-    });
+  // ── 全体背景BGワード パララックス（各行を異なる速度で動かして奥行き演出）
+
+  // const siteBgWords = document.querySelectorAll('.site-bg-word');
+  // const siteBgSpeeds = [-80, -120, -60, -100]; // vh単位で上へ移動
+  // siteBgWords.forEach((word, i) => {
+  //   gsap.to(word, {
+  //     y: siteBgSpeeds[i] + 'vh',
+  //     ease: 'none',
+  //     scrollTrigger: {
+  //       trigger: 'body',
+  //       start: 'top top',
+  //       end: 'bottom bottom',
+  //       scrub: 2
+  //     }
+  //   });
+  // });
 
   // 14. SECTION BG PIN (background fixed fx)
   //     Books section gets a subtle pan
@@ -807,7 +832,9 @@
   // INIT ALL
   // ──────────────────────────────────────────────
   const init = () => {
-    initLoader();
+    // initLoader(); // ローダー一時スキップ中
+    document.body.classList.remove('is-loading');
+    initHeroEntrance();
     initCursor();
     initInkSplash();
     initHeader();

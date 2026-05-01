@@ -73,7 +73,7 @@ $xxl : 1536px;
 }
 
 @mixin glass($opacity: 0.08, $blur: 18px, $border: 0.12) {
-  background: rgba($c-white, var(--glass-opacity, $opacity));
+  background: transparent;
   backdrop-filter: blur(var(--glass-blur, $blur));
   -webkit-backdrop-filter: blur(var(--glass-blur, $blur));
   border: 1px solid rgba($c-white, var(--glass-border, $border));
@@ -108,10 +108,10 @@ html {
 // ================================================================
 :root {
   // 明セクション（プロフィール・著書・お問い合わせ）
-  --section-light: rgba(220, 220, 225, .07);
+  --section-light: rgba(34, 34, 34, 0.55);
 
   // 暗セクション（ヒーロー・出演・経歴）
-  --section-dark: rgba(4, 10, 45, .72);
+  --section-dark: rgba(4, 10, 45, .24);
 
   // フッター
   --section-footer: rgba(5, 12, 40, .75);
@@ -126,6 +126,22 @@ body {
   font-family: $f-serif-ja;
   color: rgba($c-white, .88);
   background: #070d1a;
+
+  // /* 1. 背景画像を半透明の白で覆いつつ表示（0.5の数字を変えると透明度が変わる） */
+  // background-image: linear-gradient(rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.95)), url(/images/bg.png);
+
+  // /* 2. 画像をリピートさせない */
+  // background-repeat: no-repeat;
+
+  // /* 3. 画面いっぱいに広げる（比率を保ったまま隙間を埋める） */
+  // background-size: cover;
+
+  // /* 4. 画像を画面の中央に配置する */
+  // background-position: center;
+
+  // /* 5. スクロールしても背景が動かないように固定（これを入れるとリッチに見える！） */
+  // background-attachment: fixed;
+
   overflow-x: hidden;
   cursor: none;
 
@@ -194,10 +210,6 @@ address {
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  padding: 8vh 0;
   filter: grayscale(1);
 }
 
@@ -206,26 +218,19 @@ address {
   font-size: clamp(8rem, 18vw, 20rem);
   line-height: .9;
   color: transparent;
-  -webkit-text-stroke: 1px rgba($c-white, .08);
+  -webkit-text-stroke: 1px rgba($c-white, .06);
   white-space: nowrap;
   will-change: transform;
-  display: block;
+  position: absolute;
+  left: 0;
 
-  &--1 {
-    margin-left: -2%;
+  &--1 { top: 5vh;  margin-left: -2%; }
+  &--2 { top: 30vh; margin-left: 15%;
   }
 
-  &--2 {
-    margin-left: 15%;
-  }
+  &--3 { top: 55vh; margin-left: -5%; }
 
-  &--3 {
-    margin-left: -5%;
-  }
-
-  &--4 {
-    margin-left: 25%;
-  }
+  &--4 { top: 80vh; margin-left: 25%; }
 }
 
 // ----------------------------------------------------------------
@@ -353,6 +358,14 @@ address {
   left: 0;
   right: 0;
   z-index: 100;
+
+  // nav open時はstacking contextを解除して nav が前面に出られるようにする
+  &.nav-is-open {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: transparent !important;
+    z-index: 0 !important;
+  }
   transition: background .4s, backdrop-filter .4s, box-shadow .4s;
 
   &.is-scrolled {
@@ -507,17 +520,21 @@ address {
   @include dn($lg) {
     display: none;
     position: fixed;
-    inset: 0;
-    background: rgba(#050b15, .97);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(5, 11, 21, .97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 95;
+    z-index: 999;
 
     &.is-open {
       display: flex;
+      z-index: 9999 !important;
     }
   }
 
@@ -592,7 +609,7 @@ address {
   border: none;
   cursor: pointer;
   padding: 5px;
-  z-index: 200;
+  z-index: 1000;
   position: relative;
 
   @include dn($lg) {
@@ -610,6 +627,13 @@ address {
   }
 
   &.is-active {
+    // navがbody直下に移動してもボタンを最前面に固定
+    display: flex !important;
+    position: fixed;
+    top: 1.2rem;
+    right: 1.25rem;
+    z-index: 10000;
+
     span:nth-child(1) {
       transform: translateY(7px) rotate(45deg);
     }
@@ -829,64 +853,64 @@ address {
     right: 10%;
     bottom: 0;
     top: 80px;
-    width: 46%;
-    min-width: 300px;
+    // width: 46%;
+    width: 300px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     pointer-events: none;
     z-index: 2;
 
-    @include dn($lg) {
+    // @include dn($lg) {
 
-      width: 300px;
-    }
+    //   width: 300px;
+    // }
   }
 
-  &__photo {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    max-height: 92%;
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 0 60px rgba($c-blue-mid, .25));
-  }
+  // &__photo {
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 50%;
+  //   transform: translateX(-50%);
+  //   max-height: 92%;
+  //   width: auto;
+  //   object-fit: contain;
+  //   filter: drop-shadow(0 0 60px rgba($c-blue-mid, .25));
+  // }
 
-  &__photo-placeholder {
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    color: rgba($c-white, .12);
+  // &__photo-placeholder {
+  //   position: absolute;
+  //   bottom: 10%;
+  //   left: 50%;
+  //   transform: translateX(-50%);
+  //   text-align: center;
+  //   color: rgba($c-white, .12);
 
-    svg {
-      width: 120px;
-      height: auto;
-    }
+  //   svg {
+  //     width: 120px;
+  //     height: auto;
+  //   }
 
-    p {
-      font-family: $f-bebas;
-      font-size: .75rem;
-      letter-spacing: .3em;
-      margin-top: .75rem;
-    }
-  }
+  //   p {
+  //     font-family: $f-bebas;
+  //     font-size: .75rem;
+  //     letter-spacing: .3em;
+  //     margin-top: .75rem;
+  //   }
+  // }
 
-  .no-photo &__photo {
-    display: none;
-  }
+  // .no-photo &__photo {
+  //   display: none;
+  // }
 
   &__photo-glow {
     position: absolute;
     // 写真エリアの中心（right:10%〜56% → 中心は right約33% = left約67%）
-    top: 50%;
-    left: 62%;
-    transform: translate(-50%, -50%);
-    width: clamp(400px, 55vw, 700px);
-    height: clamp(400px, 55vw, 700px);
+    top: 45%;
+    right: 4%;
+    // transform: translate(-50%, -50%);
+    width: clamp(450px, 55vw, 450px);
+    height: clamp(450px, 55vw, 450px);
     background: radial-gradient(ellipse,
         rgba($c-blue-lt, .22) 0%,
         rgba($c-blue, .10) 40%,
@@ -895,19 +919,19 @@ address {
     z-index: 1;
 
     // モバイル：写真が下部中央に来る場合
-    @include dn($lg) {
-      left: 50%;
-      top: 65%;
-      width: clamp(280px, 80vw, 480px);
-      height: clamp(280px, 80vw, 480px);
-    }
+    // @include dn($lg) {
+    //   left: 50%;
+    //   top: 65%;
+    //   width: clamp(280px, 80vw, 480px);
+    //   height: clamp(280px, 80vw, 480px);
+    // }
   }
 
-  // Scroll indicator — 右端固定
+  // Scroll indicator — 左端固定
   &__scroll-indicator {
     position: absolute;
     bottom: 3rem;
-    right: 2.5rem;
+    left: 2.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2552,45 +2576,17 @@ address {
     z-index: 1;
   }
 
-  &.sns--x {
-    .sns-link__icon {
-      color: rgba($c-white, .7);
-    }
-
-    &::before {
-      background: #000;
-    }
+  // アイコンは常に白で視認性を確保
+  .sns-link__icon {
+    color: rgba($c-white, .75) !important;
   }
 
-  &.sns--fb {
-    .sns-link__icon {
-      color: #1877F2;
-    }
+  &.sns--x::before    { background: rgba($c-white, .06); }
+  &.sns--fb::before   { background: rgba($c-white, .06); }
+  &.sns--blog::before { background: rgba($c-white, .06); }
+  &.sns--bunshun::before { background: rgba($c-white, .06); }
 
-    &::before {
-      background: #1877F2;
-    }
-  }
-
-  &.sns--blog {
-    .sns-link__icon {
-      color: $c-blue;
-    }
-
-    &::before {
-      background: $c-blue;
-    }
-  }
-
-  &.sns--bunshun {
-    .sns-link__icon {
-      color: rgba($c-white, .7);
-    }
-
-    &::before {
-      background: rgba($c-blue-mid, .8);
-    }
-  }
+  &:hover .sns-link__icon { color: $c-white !important; }
 }
 
 .contact-block {
