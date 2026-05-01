@@ -16,7 +16,7 @@ html {
 
 :root {
   --section-light: rgba(34, 34, 34, 0.55);
-  --section-dark: rgba(0, 17, 114, 0.24);
+  --section-dark: rgba(0, 9, 56, 0.721);
   --section-footer: rgba(5, 12, 40, .75);
   --glass-bg-opacity: 0.02;
   --glass-blur-amount: 0px;
@@ -99,7 +99,7 @@ canvas {
   font-size: clamp(8rem, 18vw, 20rem);
   line-height: 0.9;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(250, 250, 248, 0.05);
+  -webkit-text-stroke: 1px rgba(250, 250, 248, 0.1);
   white-space: nowrap;
   will-change: transform;
   position: absolute;
@@ -528,6 +528,7 @@ canvas {
   display: inline-block;
   margin-bottom: 2rem;
   perspective: 1200px;
+  width: 100%;
 }
 .hero__glass-inner {
   padding: 2rem 2.5rem 2.25rem;
@@ -536,15 +537,6 @@ canvas {
   -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border-radius: 20px;
   position: relative;
-}
-.hero__glass-inner::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgba(250, 250, 248, 0.35) 30%, rgba(250, 250, 248, 0.5) 50%, rgba(250, 250, 248, 0.35) 70%, transparent);
 }
 .hero__glass-inner::after {
   content: "";
