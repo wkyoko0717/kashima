@@ -16,11 +16,12 @@ html {
 
 :root {
   --section-light: rgba(34, 34, 34, 0.55);
-  --section-dark: rgba(4, 10, 45, .24);
+  --section-dark: rgba(0, 17, 114, 0.24);
   --section-footer: rgba(5, 12, 40, .75);
-  --glass-opacity: .04;
+  --glass-bg-opacity: 0.02;
+  --glass-blur-amount: 0px;
   --glass-border: .08;
-  --glass-blur: 16px;
+  --glass-opacity: .04;
 }
 
 body {
@@ -74,6 +75,16 @@ address {
   font-style: normal;
 }
 
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.42;
+}
+
 .site-bg-words {
   position: fixed;
   inset: 0;
@@ -88,7 +99,7 @@ address {
   font-size: clamp(8rem, 18vw, 20rem);
   line-height: 0.9;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(250, 250, 248, 0.06);
+  -webkit-text-stroke: 1px rgba(250, 250, 248, 0.05);
   white-space: nowrap;
   will-change: transform;
   position: absolute;
@@ -233,7 +244,7 @@ address {
 }
 .site-header__ticker {
   height: 30px;
-  background: #587397;
+  background: rgba(88, 115, 151, 0.1);
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -244,7 +255,7 @@ address {
   font-size: 0.7rem;
   letter-spacing: 0.2em;
   color: #FAFAF8;
-  background: #B83228;
+  background: #1A1816;
   height: 100%;
   display: flex;
   align-items: center;
@@ -265,7 +276,7 @@ address {
   font-size: 0.65rem;
   font-weight: 300;
   letter-spacing: 0.08em;
-  color: rgba(250, 250, 248, 0.85);
+  color: rgba(250, 250, 248, 0.55);
   padding-right: 0;
 }
 .site-header__main {
@@ -459,11 +470,11 @@ address {
   align-items: center;
   position: relative;
   overflow: hidden;
-  padding: 9rem 2rem 5rem;
+  padding: 9rem 0 5rem;
 }
 @media (max-width: 767px) {
   .hero {
-    padding: 8rem 1.25rem 4rem;
+    padding: 8rem 0 4rem;
   }
 }
 .hero__bg-words {
@@ -480,7 +491,7 @@ address {
   font-size: clamp(10rem, 22vw, 24rem);
   line-height: 0.85;
   color: transparent;
-  -webkit-text-stroke: 1px rgba(250, 250, 248, 0.05);
+  -webkit-text-stroke: 0.5px rgba(250, 250, 248, 0.1);
   white-space: nowrap;
   will-change: transform;
 }
@@ -503,25 +514,68 @@ address {
 .hero__content {
   position: relative;
   z-index: 3;
-  max-width: 680px;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
-@media (min-width: 1024px) {
+@media (max-width: 767px) {
   .hero__content {
-    max-width: 52%;
+    padding: 0 1.25rem;
+  }
+}
+.hero__glass {
+  display: inline-block;
+  margin-bottom: 2rem;
+  perspective: 1200px;
+}
+.hero__glass-inner {
+  padding: 2rem 2.5rem 2.25rem;
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  border-radius: 20px;
+  position: relative;
+}
+.hero__glass-inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(250, 250, 248, 0.35) 30%, rgba(250, 250, 248, 0.5) 50%, rgba(250, 250, 248, 0.35) 70%, transparent);
+}
+.hero__glass-inner::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(250, 250, 248, 0.3), rgba(250, 250, 248, 0.08), transparent);
+}
+.hero__glass-inner {
+  box-shadow: 4px 8px 24px rgba(0, 0, 0, 0.25), 12px 20px 60px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(250, 250, 248, 0.1);
+}
+@media (max-width: 767px) {
+  .hero__glass-inner {
+    transform: none;
+    padding: 1.5rem 1.75rem;
   }
 }
 .hero__badge {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
+  opacity: 0.5;
   margin-bottom: 1.75rem;
 }
 .hero__badge .badge__gougai {
   font-family: "Noto Serif JP", serif;
   font-size: 1.5rem;
   font-weight: 900;
-  color: #B83228;
-  border: 2.5px solid #B83228;
+  color: #FAFAF8;
+  border: 1px solid #FAFAF8;
   padding: 0 0.4em;
   line-height: 1.3;
   letter-spacing: 0.15em;
@@ -560,10 +614,10 @@ address {
   display: block;
   font-family: "Noto Serif JP", serif;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.22em;
   color: #FAFAF8;
   overflow: hidden;
-  font-size: clamp(44px, 44px + (90 - 44) * (100vw - 375px) / (1440 - 375), 90px);
+  font-size: clamp(44px, 44px + (60 - 44) * (100vw - 375px) / (1440 - 375), 60px);
   line-height: 1.1;
 }
 .hero__subtitle {
@@ -629,7 +683,7 @@ address {
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
-  z-index: 2;
+  z-index: 20;
 }
 .hero__photo-glow {
   position: absolute;
@@ -701,9 +755,9 @@ address {
 }
 .fragment {
   position: absolute;
-  background: transparent;
-  backdrop-filter: blur(var(--glass-blur, 4px));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 4px));
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border: 1px solid rgba(250, 250, 248, var(--glass-border, 0.08));
   padding: 1rem 1.25rem;
   will-change: transform;
@@ -1075,6 +1129,8 @@ address {
      object-fit: cover;
   -o-object-position: top center;
      object-position: top center;
+  opacity: 0.8;
+  background-color: rgba(26, 24, 22, 0.2);
   border-radius: 50%;
   border: 1px solid rgba(250, 250, 248, 0.12);
   box-shadow: 0 0 0 6px rgba(250, 250, 248, 0.04), 0 0 40px rgba(90, 159, 212, 0.15), 0 16px 48px rgba(0, 0, 0, 0.4);
@@ -1114,12 +1170,14 @@ address {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem 2rem;
-  padding: 1.25rem;
-  background: rgba(250, 250, 248, 0.04);
-  border: 1px solid rgba(250, 250, 248, 0.1);
-  border-left: 2px solid rgba(196, 162, 58, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  border: 1px solid rgba(250, 250, 248, var(--glass-border, 0.1));
+  border-radius: 10px;
+  border-top: 1px solid rgba(196, 162, 58, 0.35);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08), 0 12px 40px rgba(0, 0, 0, 0.18), 0 32px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(250, 250, 248, 0.08);
 }
 .about__meta > div {
   display: flex;
@@ -1152,9 +1210,9 @@ address {
 }
 
 .stat-card {
-  background: transparent;
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border: 1px solid rgba(250, 250, 248, var(--glass-border, 0.12));
   padding: 1.75rem 1.5rem;
   position: relative;
@@ -1166,7 +1224,7 @@ address {
   align-items: flex-start;
   justify-content: space-between;
   min-height: 120px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28), 0 3px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(250, 250, 248, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08), 0 12px 40px rgba(0, 0, 0, 0.18), 0 32px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(250, 250, 248, 0.08);
 }
 .stat-card::before {
   content: "";
@@ -1248,9 +1306,9 @@ address {
 }
 
 .media-block {
-  background: transparent;
-  backdrop-filter: blur(var(--glass-blur, 20px));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border: 1px solid rgba(250, 250, 248, var(--glass-border, 0.12));
   padding: 2rem;
   border-radius: 10px;
@@ -1258,7 +1316,7 @@ address {
   position: relative;
   height: 100%;
   box-sizing: border-box;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28), 0 4px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(250, 250, 248, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08), 0 12px 40px rgba(0, 0, 0, 0.18), 0 32px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(250, 250, 248, 0.08);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s, background 0.35s;
 }
 .media-block::after {
@@ -1268,15 +1326,15 @@ address {
   left: 4px;
   right: -4px;
   height: 100%;
-  background: rgba(0, 0, 0, 0.25);
+  background: transparent;
   border-radius: 10px;
   z-index: -1;
   filter: blur(2px);
 }
 .media-block:hover {
-  transform: translateY(-6px);
-  background: rgba(250, 250, 248, 0.1);
-  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.35), 0 4px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(250, 250, 248, 0.14);
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, var(--media-bg-opacity, 0));
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08), 0 24px 60px rgba(0, 0, 0, 0.22), 0 48px 100px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(250, 250, 248, 0.12);
 }
 .media-block__title {
   font-family: "Noto Sans JP", sans-serif;
@@ -1446,6 +1504,7 @@ address {
   background: var(--section-light);
   overflow: visible;
   position: relative;
+  z-index: 1;
 }
 .books::before {
   content: "";
@@ -1998,15 +2057,15 @@ address {
   gap: 1rem;
   padding: 0.9rem 1.25rem;
   border-radius: 8px;
-  background: transparent;
-  backdrop-filter: blur(var(--glass-blur, 14px));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 14px));
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border: 1px solid rgba(250, 250, 248, var(--glass-border, 0.14));
   position: relative;
   z-index: 1;
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28), 0 2px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(250, 250, 248, 0.12);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08), 0 12px 40px rgba(0, 0, 0, 0.18), 0 32px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(250, 250, 248, 0.08);
 }
 .sns-link::before {
   content: "";
@@ -2022,6 +2081,7 @@ address {
   border-color: transparent;
   color: #FAFAF8;
   transform: translateX(6px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.08), 0 24px 60px rgba(0, 0, 0, 0.22), 0 48px 100px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(250, 250, 248, 0.12);
 }
 .sns-link:hover::before {
   width: 100%;
@@ -2111,13 +2171,13 @@ address {
 .contact-block__agency {
   margin-top: 1.25rem;
   padding: 1.25rem 1.5rem;
-  background: transparent;
-  backdrop-filter: blur(var(--glass-blur, 16px));
-  -webkit-backdrop-filter: blur(var(--glass-blur, 16px));
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border: 1px solid rgba(250, 250, 248, var(--glass-border, 0.12));
   border-radius: 10px;
   border-top: 1px solid rgba(196, 162, 58, 0.35);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28), 0 3px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(250, 250, 248, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08), 0 12px 40px rgba(0, 0, 0, 0.18), 0 32px 80px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(250, 250, 248, 0.08);
   font-family: "Noto Sans JP", sans-serif;
   font-size: 0.88rem;
   line-height: 2;
@@ -2141,6 +2201,7 @@ address {
   background: var(--section-footer);
   padding: 3rem 0;
   position: relative;
+  z-index: 1;
 }
 .site-footer::before {
   content: "";

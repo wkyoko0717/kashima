@@ -316,62 +316,26 @@
   const initReveal = () => {
     // Section headers
     gsap.utils.toArray('.section-header').forEach(el => {
-      gsap.from(el.children, {
-        opacity: 0,
-        y: 30,
-        stagger: .12,
-        duration: .9,
-        ease: 'expo.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 88%',
-          toggleActions: 'play none none none'
+      gsap.fromTo(el.children,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1, y: 0,
+          stagger: .12, duration: .9, ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: 'top 90%', once: true }
         }
-      });
+      );
     });
 
     // About layout
-    gsap.from('.about__lead', {
-      opacity: 0,
-      y: 24,
-      duration: 1,
-      ease: 'expo.out',
-      scrollTrigger: { trigger: '.about__lead', start: 'top 88%' }
-    });
-    gsap.from('.about__cols p', {
-      opacity: 0,
-      y: 20,
-      stagger: .15,
-      duration: .85,
-      ease: 'expo.out',
-      scrollTrigger: { trigger: '.about__cols', start: 'top 88%' }
-    });
-    gsap.from('.about__meta', {
-      opacity: 0,
-      y: 16,
-      duration: .7,
-      scrollTrigger: { trigger: '.about__meta', start: 'top 90%' }
-    });
+    gsap.fromTo('.about__lead', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.about__lead', start: 'top 90%', once: true } });
+    gsap.fromTo('.about__cols p', { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: .15, duration: .85, ease: 'expo.out', scrollTrigger: { trigger: '.about__cols', start: 'top 90%', once: true } });
+    gsap.fromTo('.about__meta', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .7, scrollTrigger: { trigger: '.about__meta', start: 'top 92%', once: true } });
 
     // Stat cards — slide up stagger
-    gsap.from('.stat-card', {
-      opacity: 0,
-      y: 40,
-      stagger: .15,
-      duration: .9,
-      ease: 'expo.out',
-      scrollTrigger: { trigger: '.about__stats-col', start: 'top 85%' }
-    });
+    gsap.fromTo('.stat-card', { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: .15, duration: .9, ease: 'expo.out', scrollTrigger: { trigger: '.about__stats-col', start: 'top 92%', once: true } });
 
     // Media blocks
-    gsap.from('.media-block', {
-      opacity: 0,
-      y: 40,
-      stagger: .15,
-      duration: .9,
-      ease: 'expo.out',
-      scrollTrigger: { trigger: '.media__grid', start: 'top 85%' }
-    });
+    gsap.fromTo('.media-block', { opacity: 0, y: 40 }, { opacity: 1, y: 0, stagger: .15, duration: .9, ease: 'expo.out', scrollTrigger: { trigger: '.media__grid', start: 'top 92%', once: true } });
 
     // Timeline items
     gsap.utils.toArray('.tl-item').forEach((item, i) => {
@@ -389,14 +353,7 @@
     });
 
     // Event cards
-    gsap.from('.event-card', {
-      opacity: 0,
-      y: 30,
-      stagger: .12,
-      duration: .85,
-      ease: 'expo.out',
-      scrollTrigger: { trigger: '.events__list', start: 'top 85%' }
-    });
+    gsap.fromTo('.event-card', { opacity: 0, y: 30 }, { opacity: 1, y: 0, stagger: .12, duration: .85, ease: 'expo.out', scrollTrigger: { trigger: '.events__list', start: 'top 92%', once: true } });
 
     // SNS links
     gsap.fromTo('.sns-link',

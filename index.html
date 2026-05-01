@@ -23,6 +23,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/97/three.min.js"></script>
 </head>
 
 <body class="is-loading">
@@ -157,25 +158,23 @@
 
       <!--ヒーローコンテンツ-->
       <div class="hero__content">
-        <div class="hero__badge">
-          <span class="badge__gougai">公式</span>
-          <!-- <span class="badge__extra">OFFICIAL HOME PAGE</span> -->
+        <div class="hero__glass">
+          <div class="hero__glass-inner">
+            <div class="hero__badge">
+              <span class="badge__gougai">公式</span>
+            </div>
+            <div class="hero__headline-wrap">
+              <h1 class="hero__headline">
+                <span class="hl__label">時事芸人</span>
+                <span class="hl__rule" aria-hidden="true"></span>
+                <span class="hl__name">プチ鹿島　</span>
+              </h1>
+              <p class="hero__subtitle">
+                <span>Official WebSite</span>
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="hero__headline-wrap">
-          <h1 class="hero__headline">
-            <span class="hl__label">時事芸人</span>
-            <span class="hl__rule" aria-hidden="true"></span>
-            <span class="hl__name">プチ鹿島</span>
-          </h1>
-          <p class="hero__subtitle">
-            <span>Petit Kashima</span>
-            <span class="hero__subtitle-sep" aria-hidden="true">—</span>
-            <span>Official</span>
-          </p>
-        </div>
-        <!-- <p class="hero__tagline">
-          毎朝、全紙にツッコむ。<br>それが俺の仕事だ。
-        </p> -->
         <a href="#about" class="hero__scroll-cta">
           <span>READ MORE</span>
           <span class="cta__arrow" aria-hidden="true">
@@ -741,7 +740,7 @@
             <p>講演依頼・メディア出演・取材等は所属事務所までお気軽にどうぞ。</p>
             <address class="contact-block__agency">
               <strong>ワタナベエンターテインメント</strong><br>
-              TEL: 03-XXXX-XXXX<br>
+              <!-- TEL: 03-XXXX-XXXX<br> -->
               MAIL: <a href="mailto:info@watanabepro.co.jp">info@watanabepro.co.jp</a>
             </address>
             <p class="contact-block__note">※ 個人への直接のご連絡はご遠慮ください。</p>
@@ -778,6 +777,7 @@
   </footer>
 
   <script src="./js/main.js"></script>
+  <script src="./js/smoke.js"></script>
 </body>
 
 </html>

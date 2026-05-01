@@ -73,9 +73,9 @@ $xxl : 1536px;
 }
 
 @mixin glass($opacity: 0.08, $blur: 18px, $border: 0.12) {
-  background: transparent;
-  backdrop-filter: blur(var(--glass-blur, $blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur, $blur));
+  background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+  backdrop-filter: blur(var(--glass-blur-amount, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
   border: 1px solid rgba($c-white, var(--glass-border, $border));
 }
 
@@ -111,15 +111,16 @@ html {
   --section-light: rgba(34, 34, 34, 0.55);
 
   // 暗セクション（ヒーロー・出演・経歴）
-  --section-dark: rgba(4, 10, 45, .24);
+  --section-dark: rgba(0, 17, 114, 0.24);
 
   // フッター
   --section-footer: rgba(5, 12, 40, .75);
 
-  // ガラスパネル（枠のopacity）— 数字を下げると透明に
-  --glass-opacity: .04;
-  --glass-border: .08;
-  --glass-blur: 16px;
+  // ガラスパネル共通設定 ————————————————————
+  --glass-bg-opacity: 0.02; // 背景の白み（0=透明 / 0.08=薄い白）
+  --glass-blur-amount: 0px; // ぼかし（0px=なし / 12px=すりガラス）
+  --glass-border: .08; // 枠線の濃さ
+  --glass-opacity: .04; // 旧変数（互換用）
 }
 
 body {
@@ -128,7 +129,7 @@ body {
   background: #070d1a;
 
   // /* 1. 背景画像を半透明の白で覆いつつ表示（0.5の数字を変えると透明度が変わる） */
-  // background-image: linear-gradient(rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.95)), url(/images/bg.png);
+  // background-image: linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.88)), url(/images/bg.png);
 
   // /* 2. 画像をリピートさせない */
   // background-repeat: no-repeat;
@@ -199,6 +200,19 @@ address {
   font-style: normal;
 }
 
+// ----------------------------------------------------------------
+// SMOKE (煙)
+// ----------------------------------------------------------------
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.42;
+}
 
 // ----------------------------------------------------------------
 // SITE BG WORDS (全ページ背景パララックス英字)
@@ -218,19 +232,31 @@ address {
   font-size: clamp(8rem, 18vw, 20rem);
   line-height: .9;
   color: transparent;
-  -webkit-text-stroke: 1px rgba($c-white, .06);
+  -webkit-text-stroke: 1px rgba($c-white, .05);
   white-space: nowrap;
   will-change: transform;
   position: absolute;
   left: 0;
 
-  &--1 { top: 5vh;  margin-left: -2%; }
-  &--2 { top: 30vh; margin-left: 15%;
+  &--1 {
+    top: 5vh;
+    margin-left: -2%;
   }
 
-  &--3 { top: 55vh; margin-left: -5%; }
+  &--2 {
+    top: 30vh;
+    margin-left: 15%;
+  }
 
-  &--4 { top: 80vh; margin-left: 25%; }
+  &--3 {
+    top: 55vh;
+    margin-left: -5%;
+  }
+
+  &--4 {
+    top: 80vh;
+    margin-left: 25%;
+  }
 }
 
 // ----------------------------------------------------------------
@@ -366,7 +392,10 @@ address {
     background: transparent !important;
     z-index: 0 !important;
   }
-  transition: background .4s, backdrop-filter .4s, box-shadow .4s;
+
+  transition: background .4s,
+  backdrop-filter .4s,
+  box-shadow .4s;
 
   &.is-scrolled {
     background: rgba($c-navy, .93);
@@ -378,7 +407,8 @@ address {
   // ── Ticker
   &__ticker {
     height: 30px;
-    background: $c-blue;
+    // background: $c-blue;
+    background: rgba($c-blue, .1);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -389,7 +419,7 @@ address {
       font-size: .7rem;
       letter-spacing: .2em;
       color: $c-white;
-      background: $c-red;
+      background: $c-ink;
       height: 100%;
       display: flex;
       align-items: center;
@@ -412,7 +442,7 @@ address {
         font-size: .65rem;
         font-weight: 300;
         letter-spacing: .08em;
-        color: rgba($c-white, .85);
+        color: rgba($c-white, .55);
         padding-right: 0;
       }
     }
@@ -661,10 +691,10 @@ address {
   align-items: center;
   position: relative;
   overflow: hidden;
-  padding: 9rem 2rem 5rem;
+  padding: 9rem 0 5rem;
 
   @include dn($md) {
-    padding: 8rem 1.25rem 4rem;
+    padding: 8rem 0 4rem;
   }
 
   // ── Large BG words (parallax targets)
@@ -683,7 +713,7 @@ address {
     font-size: clamp(10rem, 22vw, 24rem);
     line-height: .85;
     color: transparent;
-    -webkit-text-stroke: 1px rgba($c-white, .05);
+    -webkit-text-stroke: 0.5px rgba($c-white, 0.1);
     white-space: nowrap;
     will-change: transform;
 
@@ -713,10 +743,83 @@ address {
   &__content {
     position: relative;
     z-index: 3;
-    max-width: 680px;
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 0 2rem;
 
-    @include up($lg) {
-      max-width: 52%;
+    @include dn($md) {
+      padding: 0 1.25rem;
+    }
+  }
+
+
+  // ── ガラス板パネル
+  &__glass {
+    display: inline-block;
+    margin-bottom: 2rem;
+    perspective: 1200px;
+  }
+
+  &__glass-inner {
+    padding: 2rem 2.5rem 2.25rem;
+    background: rgba(255, 255, 255, var(--glass-bg-opacity, 0));
+    backdrop-filter: blur(var(--glass-blur-amount, 0px));
+    -webkit-backdrop-filter: blur(var(--glass-blur-amount, 0px));
+    // border: 1px solid rgba($c-white, .14);
+    border-radius: 20px;
+    position: relative;
+
+    // 奥に傾ける3D変形
+    // transform:
+    //   perspective(900px)
+    //   // rotateY(4deg)
+    //   // rotateX(-2deg);
+    // transform-style: preserve-3d;
+    // transition: transform .6s $ease-expo;
+
+    // 上端の光の反射
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right,
+          transparent,
+          rgba($c-white, .35) 30%,
+          rgba($c-white, .5) 50%,
+          rgba($c-white, .35) 70%,
+          transparent);
+    }
+
+    // 左端の光の反射（奥行き方向）
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      // width: 1px;
+      background: linear-gradient(to bottom,
+          rgba($c-white, .3),
+          rgba($c-white, .08),
+          transparent);
+    }
+
+    box-shadow: 4px 8px 24px rgba(0, 0, 0, .25),
+    12px 20px 60px rgba(0, 0, 0, .2),
+    inset 0 1px 0 rgba($c-white, .1);
+
+    // &:hover {
+    //   transform:
+    //     perspective(900px) rotateY(1deg) rotateX(-1deg);
+    // }
+
+    @include dn($md) {
+      transform: none;
+      padding: 1.5rem 1.75rem;
     }
   }
 
@@ -725,14 +828,15 @@ address {
     display: inline-flex;
     align-items: center;
     gap: .75rem;
+    opacity: 0.5;
     margin-bottom: 1.75rem;
 
     .badge__gougai {
       font-family: $f-serif-ja;
       font-size: 1.5rem;
       font-weight: 900;
-      color: $c-red;
-      border: 2.5px solid $c-red;
+      color: $c-white;
+      border: 1px solid $c-white;
       padding: 0 .4em;
       line-height: 1.3;
       letter-spacing: .15em;
@@ -779,10 +883,10 @@ address {
     display: block;
     font-family: $f-serif-ja;
     font-weight: 900;
-    letter-spacing: .08em;
+    letter-spacing: .22em;
     color: $c-white;
     overflow: hidden;
-    @include fluid(44, 90);
+    @include fluid(44, 60);
     line-height: 1.1;
   }
 
@@ -859,7 +963,7 @@ address {
     align-items: flex-end;
     justify-content: center;
     pointer-events: none;
-    z-index: 2;
+    z-index: 20;
 
     // @include dn($lg) {
 
@@ -1477,6 +1581,8 @@ address {
     height: clamp(160px, 30vw, 240px);
     object-fit: cover;
     object-position: top center;
+    opacity: 0.8;
+    background-color: rgba($c-ink, .2);
     border-radius: 50%;
     border: 1px solid rgba($c-white, .12);
     box-shadow:
@@ -1526,12 +1632,15 @@ address {
     display: flex;
     flex-wrap: wrap;
     gap: .75rem 2rem;
-    padding: 1.25rem;
-    background: rgba($c-white, .04);
-    border: 1px solid rgba($c-white, .1);
-    border-left: 2px solid rgba($c-gold, .6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    padding: 1.25rem 1.5rem;
+    @include glass(.07, 16px, .10);
+    border-radius: 10px;
+    border-top: 1px solid rgba($c-gold, .35);
+    box-shadow:
+      0 4px 6px rgba(0, 0, 0, .08),
+      0 12px 40px rgba(0, 0, 0, .18),
+      0 32px 80px rgba(0, 0, 0, .12),
+      inset 0 1px 0 rgba($c-white, .08);
 
     >div {
       display: flex;
@@ -1580,9 +1689,10 @@ address {
   justify-content: space-between;
   min-height: 120px;
   box-shadow:
-    0 6px 24px rgba(0, 0, 0, .28),
-    0 3px 0 rgba(0, 0, 0, .4),
-    inset 0 1px 0 rgba($c-white, .1);
+    0 4px 6px rgba(0, 0, 0, .08),
+    0 12px 40px rgba(0, 0, 0, .18),
+    0 32px 80px rgba(0, 0, 0, .12),
+    inset 0 1px 0 rgba($c-white, .08);
 
   // 上部ゴールドライン
   &::before {
@@ -1673,9 +1783,10 @@ address {
   height: 100%;
   box-sizing: border-box;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, .28),
-    0 4px 0 rgba(0, 0, 0, .45),
-    inset 0 1px 0 rgba($c-white, .1);
+    0 4px 6px rgba(0, 0, 0, .08),
+    0 12px 40px rgba(0, 0, 0, .18),
+    0 32px 80px rgba(0, 0, 0, .12),
+    inset 0 1px 0 rgba($c-white, .08);
   transition: transform .35s $ease-expo, box-shadow .35s, background .35s;
 
   // ガラスの厚み（底面）
@@ -1686,19 +1797,20 @@ address {
     left: 4px;
     right: -4px;
     height: 100%;
-    background: rgba(0, 0, 0, .25);
+    background: transparent;
     border-radius: 10px;
     z-index: -1;
     filter: blur(2px);
   }
 
   &:hover {
-    transform: translateY(-6px);
-    background: rgba($c-white, .1);
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, var(--media-bg-opacity, 0));
     box-shadow:
-      0 20px 56px rgba(0, 0, 0, .35),
-      0 4px 0 rgba(0, 0, 0, .4),
-      inset 0 1px 0 rgba($c-white, .14);
+      0 8px 12px rgba(0, 0, 0, .08),
+      0 24px 60px rgba(0, 0, 0, .22),
+      0 48px 100px rgba(0, 0, 0, .15),
+      inset 0 1px 0 rgba($c-white, .12);
   }
 
   &__title {
@@ -1898,6 +2010,7 @@ address {
   background: var(--section-light);
   overflow: visible;
   position: relative;
+  z-index: 1;
   @include glass-edge;
 
   .section-header {
@@ -2493,9 +2606,10 @@ address {
   overflow: hidden;
   transition: all .35s $ease-expo;
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, .28),
-    0 2px 0 rgba(0, 0, 0, .35),
-    inset 0 1px 0 rgba($c-white, .12);
+    0 4px 6px rgba(0, 0, 0, .08),
+    0 12px 40px rgba(0, 0, 0, .18),
+    0 32px 80px rgba(0, 0, 0, .12),
+    inset 0 1px 0 rgba($c-white, .08);
 
   &::before {
     content: '';
@@ -2512,6 +2626,11 @@ address {
     border-color: transparent;
     color: $c-white;
     transform: translateX(6px);
+    box-shadow:
+      0 8px 12px rgba(0, 0, 0, .08),
+      0 24px 60px rgba(0, 0, 0, .22),
+      0 48px 100px rgba(0, 0, 0, .15),
+      inset 0 1px 0 rgba($c-white, .12);
 
     &::before {
       width: 100%;
@@ -2581,12 +2700,25 @@ address {
     color: rgba($c-white, .75) !important;
   }
 
-  &.sns--x::before    { background: rgba($c-white, .06); }
-  &.sns--fb::before   { background: rgba($c-white, .06); }
-  &.sns--blog::before { background: rgba($c-white, .06); }
-  &.sns--bunshun::before { background: rgba($c-white, .06); }
+  &.sns--x::before {
+    background: rgba($c-white, .06);
+  }
 
-  &:hover .sns-link__icon { color: $c-white !important; }
+  &.sns--fb::before {
+    background: rgba($c-white, .06);
+  }
+
+  &.sns--blog::before {
+    background: rgba($c-white, .06);
+  }
+
+  &.sns--bunshun::before {
+    background: rgba($c-white, .06);
+  }
+
+  &:hover .sns-link__icon {
+    color: $c-white !important;
+  }
 }
 
 .contact-block {
@@ -2612,9 +2744,10 @@ address {
     border-radius: 10px;
     border-top: 1px solid rgba($c-gold, .35);
     box-shadow:
-      0 6px 24px rgba(0, 0, 0, .28),
-      0 3px 0 rgba(0, 0, 0, .4),
-      inset 0 1px 0 rgba($c-white, .1);
+      0 4px 6px rgba(0, 0, 0, .08),
+      0 12px 40px rgba(0, 0, 0, .18),
+      0 32px 80px rgba(0, 0, 0, .12),
+      inset 0 1px 0 rgba($c-white, .08);
     font-family: $f-sans-ja;
     font-size: .88rem;
     line-height: 2;
@@ -2646,6 +2779,7 @@ address {
   background: var(--section-footer);
   padding: 3rem 0;
   position: relative;
+  z-index: 1;
   @include glass-edge;
 
   &__inner {
